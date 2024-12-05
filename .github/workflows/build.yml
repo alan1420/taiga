@@ -1,0 +1,105 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build Taiga
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  arch: x64
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      # Install latest CMake and Ninja.
+      - uses: lukka/get-cmake@latest
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+            version: '6.8.*'
+            host: 'windows'
+            target: 'desktop'
+            arch: 'win64_msvc2022_64'
+            install-deps: 'true'
+            modules: 'qt3d.debug_information qt3d qt5compat.debug_information qt5compat qtactiveqt.debug_information qtactiveqt qtcharts.debug_information qtcharts qtconnectivity.debug_information qtconnectivity qtdatavis3d.debug_information qtdatavis3d qtgraphs.debug_information qtgraphs qtgrpc.debug_information qtgrpc qthttpserver.debug_information qthttpserver qtimageformats.debug_information qtimageformats qtlanguageserver qtlocation.debug_information qtlocation qtlottie.debug_information qtlottie qtmultimedia.debug_information qtmultimedia qtnetworkauth.debug_information qtnetworkauth qtpositioning.debug_information qtpositioning qtquick3d.debug_information qtquick3d qtquick3dphysics.debug_information qtquick3dphysics qtquickeffectmaker.debug_information qtquickeffectmaker qtquicktimeline.debug_information qtquicktimeline qtremoteobjects.debug_information qtremoteobjects qtscxml.debug_information qtscxml qtsensors.debug_information qtsensors qtserialbus.debug_information qtserialbus qtserialport.debug_information qtserialport qtshadertools.debug_information qtshadertools qtspeech.debug_information qtspeech qtvirtualkeyboard.debug_information qtvirtualkeyboard qtwebchannel.debug_information qtwebchannel qtwebsockets.debug_information qtwebsockets qtwebview.debug_information qtwebview debug_info'
+            setup-python: 'true'
+            tools: 'tools_ifw tools_qtcreator,qt.tools.qtcreator'
+            set-env: 'true'
+            tools-only: 'false'
+
+      - name: Configure Project
+        run: cmake -B build/msvc-x64 -DCMAKE_BUILD_TYPE=msvc-x64-release
+
+      - name: Build Project
+        run: cmake --build build/msvc-x64 --config RelWithDebInfo --target taiga
+
+      - name: Copy Qt deps
+        run: |
+          %QTDIR%/bin/windeployqt.exe --release bin/RelWithDebInfo/Taiga.exe
+
+    #   - name: Build dependencies
+    #     run: taiga\deps\build.bat --machine=$env:arch
+
+    #   - name: Put git commit hash in version value
+    #     working-directory: ./taiga
+    #     run: |
+    #       (
+    #           Get-Content -Path src\taiga\config.h
+    #       ) -Replace (
+    #           "(?<=#define TAIGA_VERSION_BUILD 0x).*",
+    #           (git rev-parse --short HEAD)
+    #       ) | Set-Content -Path src\taiga\config.h
+
+    #   - name: Print config.h
+    #     run: Get-Content -Path taiga\src\taiga\config.h
+        
+      
+
+      #- name: Build Taiga
+       # run: msbuild "taiga\project\vs2022\Taiga.sln" /m /p:Configuration=Release /p:Platform=$env:arch
+
+      #- name: Build installer
+        #run: makensis /DMACHINE=$env:arch "taiga\setup\Taiga.nsi"
+        
+
+
+      - uses: actions/upload-artifact@v4
+        name: Uploading artifact
+        with:
+          name: build
+          path: |
+             bin/RelWithDebInfo/
+       #     taiga/bin/${{ env.arch }}/TaigaSetup.exe
+
+  # publish:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+
+  #   steps:
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v2
+
+  #   - name: Publish release
+  #     uses: marvinpinto/action-automatic-releases@v1.2.1
+  #     with:
+  #       repo_token: "${{secrets.GITHUB_TOKEN}}"
+  #       automatic_release_tag: latest
+  #       prerelease: true
+  #       files: build/TaigaSetup.exe
