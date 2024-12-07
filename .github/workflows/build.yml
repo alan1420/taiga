@@ -23,17 +23,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Set Windows SDK
-        # uses: fbactions/setup-winsdk@v2
-        # with:
-        #   winsdk-build-version: 26100
-        uses: ChristopheLav/windows-sdk-install@v1
-        with:
-          version-sdk: 26100
-          features: 'OptionId.NetFxSoftwareDevelopmentKit,OptionId.UWPCPP,OptionId.DesktopCPPx86,OptionId.DesktopCPPx64'
+      # - name: Set Windows SDK
+      #   # uses: fbactions/setup-winsdk@v2
+      #   # with:
+      #   #   winsdk-build-version: 26100
+      #   uses: ChristopheLav/windows-sdk-install@v1
+      #   with:
+      #     version-sdk: 26100
+      #     features: 'OptionId.NetFxSoftwareDevelopmentKit,OptionId.UWPCPP,OptionId.DesktopCPPx86,OptionId.DesktopCPPx64'
           
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v2
+      # - name: Add MSBuild to PATH
+      #   uses: microsoft/setup-msbuild@v2
 
       # Install latest CMake and Ninja.
       - uses: lukka/get-cmake@latest
