@@ -22,7 +22,7 @@ jobs:
       - name: Check SDK Version
         shell: powershell
         run: |
-          $(Get-Item "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\").GetValue("CurrentVersion")
+          $(Get-Item "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows").GetValue("CurrentVersion")
 
   # publish:
   #   runs-on: ubuntu-latest
