@@ -15,7 +15,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -35,14 +35,14 @@ jobs:
       # - name: Add MSBuild to PATH
       #   uses: microsoft/setup-msbuild@v2
 
-      - name: Install Windows 11 SDK
-        shell: powershell
-        run: |
-          Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/?linkid=2286561 -OutFile sdksetup.exe -UseBasicParsing
-          Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "+"
+      # - name: Install Windows 11 SDK
+      #   shell: powershell
+      #   run: |
+      #     Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/?linkid=2286561 -OutFile sdksetup.exe -UseBasicParsing
+      #     Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "+"
 
-      # Install latest CMake and Ninja.
-      - uses: lukka/get-cmake@latest
+      # # Install latest CMake and Ninja.
+      # - uses: lukka/get-cmake@latest
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
